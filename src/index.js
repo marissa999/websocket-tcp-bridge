@@ -18,7 +18,7 @@ config = {
 
 // tell the user that only websockets are allowed
 app.get('*', function(req, res) {
-	res.send('you need to use a websocket');
+	res.redirect('https://github.com/marissa999/websocket-tcp-bridge');
 });
 
 io.on('connection', (webSocket) => {
@@ -58,23 +58,3 @@ io.on('connection', (webSocket) => {
 http.listen(config.port, function() {
 	console.log(`listening on *:${config.port}`);
 });
-
-
-/*
-let client = new net.Socket();
-client.connect(8997, 'syncplay.pl', () => {
-	const helloMessage = utf8.encode(`{"Hello": {"username": "testicenti", "room": {"name": "supergaySyncPlay"}, "version": "1.2.255", "realversion": "1.6.0", "features": {"sharedPlaylists": true, "chat": true, "featureList": true, "readiness": true, "managedRooms": true}}}\r\n`);
-	console.log(`Connected`);
-	console.log(`Send message:\n${helloMessage}`);
-	client.write(helloMessage);
-	console.log("Message sent");
-});
-
-client.on('data', function(data) {
-	console.log('Received: ' + data);
-});
-
-client.on('close', function() {
-	console.log('Connection closed');
-});
-*/
