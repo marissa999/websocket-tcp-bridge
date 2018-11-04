@@ -15,13 +15,12 @@ const config = {
 
 // tell the user that only websockets are allowed
 app.get("*", function(req, res) {
-  res.send("test");
+  res.redirect("https://github.com/marissa999/websocket-tcp-bridge");
 });
 
 io.on("connection", webSocket => {
   console.log("a user connected.");
 
-  let endPointInformation;
   let endPointSocket;
 
   // the middle got information from the client about the middleware
