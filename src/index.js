@@ -21,19 +21,52 @@ app.get("*", function(req, res) {
 io.on("connection", webSocket => {
   console.log("a user connected.");
 
-  let endPointSocket;
-
   // the middle got information from the client about the middleware
   webSocket.on("endPointInformation", data => {
-    endPointSocket = new net.Socket();
+    // make endpoint socket
+    let endPointSocket = new net.Socket();
+
+    // connect endpoint socket to endpoint
     endPointSocket.connect(
       data.port,
       data.hostname
     );
 
+    // close endPointSocket when websocket closes
+    webSocket.on("disconnect", () => {
+      try {
+        endPointSocket.close();
+      } catch (e) {
+        console.log(e);
+      }
+    });
+
+    // closes webSocket when when endPointSocket coses
+    endPointSocket.on("end", () => {
+      try {
+        webSocket.disconnect();
+      } catch (e) {
+        console.log(e);
+      }
+    });
+
+    // the client sent data to the middleware
+    // forward the data to the endpoint
+    webSocket.on("sendData", data => {
+      if (endPointSocket === undefined) {
+        console.log("didnt initialise connection to socket. do nothing");
+      } else {
+        console.log(
+          "received data from middleware. forward it to the endpoint"
+        );
+        console.log(data);
+        endPointSocket.write(data);
+      }
+    });
+
     // the endpoint sent data to the middleware
     // forward the data to the client
-    endPointSocket.on("data", function(data) {
+    endPointSocket.on("data", data => {
       const decodedString = String.fromCharCode.apply(
         null,
         new Uint8Array(data)
@@ -41,18 +74,6 @@ io.on("connection", webSocket => {
       console.log(decodedString);
       webSocket.emit("data", decodedString);
     });
-  });
-
-  // the client sent data to the middleware
-  // forward the data to the endpoint
-  webSocket.on("sendData", data => {
-    if (endPointSocket == undefined) {
-      console.log("didnt initialise connection to socket. do nothing");
-    } else {
-      console.log("received data from middleware. forward it to the endpoint");
-      console.log(data);
-      endPointSocket.write(data);
-    }
   });
 });
 
