@@ -1,9 +1,6 @@
 // net is needed for the socket connection
 const net = require('net');
 
-// utf8 is needed to convert a string to utf8
-const utf8 = require('utf8');
-
 // those dependencies are needed for the communication between
 // this server and the client's browser
 const app = require('express')();
@@ -11,13 +8,14 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
 // important variables
-config = {
+const config = {
 	'ip': process.env.IP || "localhost",
 	'port': process.env.PORT || 3000
 };
 
 // tell the user that only websockets are allowed
 app.get('*', function(req, res) {
+	res.send("test");
 	res.redirect('https://github.com/marissa999/websocket-tcp-bridge');
 });
 
